@@ -8,6 +8,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@700;800;900&family=Dancing+Script:wght@700&display=swap" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/qrious@4.0.2/dist/qrious.min.js"></script>
+  <!-- Menú compartido con index.html: define la variable global MENU -->
+  <script src="menu-data.js"></script>
   <style>
     :root{ --gold:#f0c060; --goldDim:#c9943a; --cream:#f5eedf; --ink:#0b1622; }
     *{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
@@ -469,20 +471,15 @@ printBtn.onclick=()=>window.print();
 [urlInput,fromInput,toInput].forEach(el=>el.addEventListener("change",saveCfg));
 
 // ══════════ FOTOS DE PLATILLOS ════════════════════════════
-// El MENU de la soda se carga desde index.html (mismo servidor)
+// El MENU se carga como variable global desde menu-data.js (incluido en el <head>)
 // Normalizamos los nombres igual que el menú
 const normFN = s => s.normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase()
   .replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
 
 (async function initPhotos(){
-  // Cargar el MENU desde index.html parseando el JS
-  let MENU_DATA = [];
-  try {
-    const html = await fetch('index.html').then(r=>r.text());
-    // Extraer el bloque const MENU = [...];
-    const m = html.match(/const MENU\s*=\s*(\[[\s\S]*?\]);\s*\n/);
-    if (m) MENU_DATA = eval(m[1]); // seguro: es nuestro propio archivo
-  } catch(e) { console.warn('No se pudo cargar MENU', e); }
+  // El menú llega como variable global MENU desde menu-data.js (cargado en el <head>).
+  const MENU_DATA = (typeof MENU !== 'undefined') ? MENU : [];
+  if (!MENU_DATA.length) console.warn('menu-data.js no se cargó: MENU vacío');
 
   const catSel  = document.getElementById('photoCat');
   const dishSel = document.getElementById('photoDish');

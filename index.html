@@ -15,35 +15,11 @@
   <meta name="apple-mobile-web-app-title" content="Soda Rústica" />
   <meta name="mobile-web-app-capable" content="yes" />
 
-  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Tailwind precompilado (estático). Para regenerar tras cambiar el diseño: npm run build:css -->
+  <link rel="stylesheet" href="tailwind.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700;800;900&family=Dancing+Script:wght@600;700&display=swap" rel="stylesheet" />
-
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            ink:       '#0b1622',
-            navy:      '#112236',
-            steel:     '#1a3550',
-            accent:    '#d62828',
-            accentDk:  '#a4161a',
-            wood:      '#b87333',
-            woodL:     '#d9934a',
-            gold:      '#f0c060',
-            goldDim:   '#c9943a',
-            cream:     '#f5eedf',
-          },
-          fontFamily: {
-            display: ['"Playfair Display"', 'serif'],
-            sans: ['Inter', 'system-ui', 'sans-serif'],
-          },
-        }
-      }
-    }
-  </script>
 
   <style>
     /* ================================================================
@@ -1588,12 +1564,10 @@
 </footer>
 
 <!-- ====================================================================
-     DATOS DEL MENÚ  ·  ✏️ EDITA AQUÍ
-     Tipos:
-       Simple:        { name:"Nombre", price:2500 }
-       + Papitas:     { name:"Nombre", price:2500, papitas:true }
-       Con opciones:  { name:"Nombre", options:[ {label:"Solo",price:2000}, {label:"Con Papas",price:2700} ] }
+     DATOS DEL MENÚ  ·  ✏️ Se editan en  menu-data.js
+     (ese archivo define la variable global MENU que usa esta página)
 ===================================================================== -->
+<script src="menu-data.js"></script>
 <script>
 /* ================================================================
    ⚙️  CONFIGURACIÓN GLOBAL — editá este bloque para personalizar
@@ -1771,145 +1745,7 @@ const DELIVERY_FEE = 1500; // ✏️ Costo fijo de envío a domicilio (₡)
   // sin archivo y hero en "logo": queda el fondo global con el logo
 })();
 
-const MENU = [
-  { id:"sandwiches", icon:"🥪", title:"Sándwiches", note:"Podés marcar «+ Papitas» para sumar ₡500.", items:[
-    { name:"De carne", price:2500, papitas:true },
-    { name:"Jamón y queso", price:2500, papitas:true },
-    { name:"Especial", price:3000, papitas:true },
-    { name:"Pechuga a la plancha", price:3000, papitas:true },
-    { name:"Pechuga empanizada", price:3000, papitas:true },
-  ]},
-  { id:"empanadas", icon:"🥟", title:"Empanadas", items:[
-    { name:"De carne o pollo", price:1200 },
-    { name:"De queso o frijol", price:1200 },
-    { name:"Arreglada", price:1600 },
-  ]},
-  { id:"fuertes", icon:"🍖", title:"Platos Fuertes", items:[
-    { name:"Filete de pescado", price:3800 },
-    { name:"Fajitas de pescado", price:3800 },
-    { name:"Camarones empanizados con papas y ensalada", price:4500 },
-    { name:"Bistec", price:3700 },
-    { name:"Bistec con arroz", price:4000 },
-    { name:"Chuleta de cerdo", price:3500 },
-    { name:"Pechuga a la plancha", price:3800 },
-    { name:"Chuleta ahumada", price:3500 },
-    { name:"Cordon Blue", price:4500 },
-    { name:"Chifrijo", price:3500 },
-    { name:"Fajitas de pollo con olores", price:4200 },
-    { name:"Bistec en salsa", price:3800 },
-    { name:"Pechuga suiza con papas y ensalada", price:4500 },
-  ]},
-  { id:"pollo", icon:"🍗", title:"Pollo Frito y Más", items:[
-    { name:"Porción cuarto y muslo", price:1800 },
-    { name:"Porción pechuga y ala", price:2300 },
-    { name:"Fajitas de pollo", price:4000 },
-    { name:"Nachos de pollo o carne", price:4000 },
-    { name:"Nachos Mixtos", price:4000 },
-    { name:"Papanachos", price:4000 },
-    { name:"Hot Dogs", price:1200 },
-    { name:"Hot Dogs con papas", price:1600 },
-    { name:"Salchipapas", price:2100 },
-    { name:"Aros de cebolla", price:2000 },
-    { name:"Torta casera en tortilla", price:2000 },
-    { name:"Torta casera en pan", price:2200 },
-    { name:"Torta de huevo", price:1100 },
-    { name:"Papas fritas", options:[{label:"Pequeñas",price:1600},{label:"Medianas",price:1800},{label:"Grandes",price:2100}] },
-    { name:"Yuca nachos", price:4500 },
-    { name:"Torta de yuca", price:600 },
-    { name:"Promo Casado + Tropical o Pepsi", price:3800 },
-  ]},
-  { id:"hamburguesas", icon:"🍔", title:"Hamburguesas", note:"Podés elegir «Solo» o «Con Papas».", items:[
-    { name:"Sencilla (queso y jamón)", options:[{label:"Solo",price:2000},{label:"Con Papas",price:2700}] },
-    { name:"Quesoburguesa", options:[{label:"Solo",price:2000},{label:"Con Papas",price:2700}] },
-    { name:"Especial (2 tortas, 2 quesos, 2 jamones)", options:[{label:"Solo",price:3200},{label:"Con Papas",price:3500}] },
-    { name:"Polloburguesa sencilla", options:[{label:"Solo",price:2000},{label:"Con Papas",price:2700}] },
-    { name:"Polloburguesa especial", options:[{label:"Solo",price:3200},{label:"Con Papas",price:3500}] },
-    { name:"Con pechuga de pollo empanizada", options:[{label:"Solo",price:3000},{label:"Con Papas",price:3500}] },
-    { name:"Con torta casera", options:[{label:"Solo",price:2000},{label:"Con Papas",price:2700}] },
-    { name:"Rústica con carne ANGUS", options:[{label:"Solo",price:3000},{label:"Con Papas",price:3500}] },
-  ]},
-  { id:"casados", icon:"🍛", title:"Casados", note:"Adicionales: Arroz ₡600 · Frijoles ₡600 · Ensalada ₡600.", items:[
-    { name:"Con bistec", price:3000 },
-    { name:"Con chuleta", price:3000 },
-    { name:"Con pollo frito cuarto", price:3000 },
-    { name:"Con chuleta ahumada", price:3000 },
-    { name:"Con filet de pescado", price:3000 },
-    { name:"Con pechuga a la plancha", price:3200 },
-    { name:"Con pechuga de pollo", price:3200 },
-    { name:"Con carne en salsa", price:3000 },
-    { name:"Casado para llevar", price:3200 },
-    { name:"Adicional: Arroz", price:600 },
-    { name:"Adicional: Frijoles", price:600 },
-    { name:"Adicional: Ensalada", price:600 },
-  ]},
-  { id:"delicias", icon:"🌯", title:"Otras Delicias", items:[
-    { name:"Gallo de salchichón", price:2000 },
-    { name:"Salchichón en pan", price:2200 },
-    { name:"Burrito grande (pollo o carne)", price:3000 },
-    { name:"Tortilla de queso", price:2300 },
-  ]},
-  { id:"arroces", icon:"🍚", title:"Arroces", note:"Con papas y ensalada. Elige «Medio» o «Entero».", items:[
-    { name:"Camarones con arroz", options:[{label:"Medio",price:3700},{label:"Entero",price:5200}] },
-    { name:"Arroz cantonés", options:[{label:"Medio",price:3000},{label:"Entero",price:3700}] },
-    { name:"Arroz con pollo", options:[{label:"Medio",price:3000},{label:"Entero",price:3700}] },
-  ]},
-  { id:"ordenes", icon:"🍤", title:"Órdenes (Entradas)", items:[
-    { name:"Orden de enyucados", price:2500 },
-    { name:"Patacones", price:2500 },
-    { name:"Deditos de queso", price:2500 },
-    { name:"Quesadillas", price:3000 },
-    { name:"Palitos de yuca", price:2500 },
-    { name:"Canastas de camarón (3 unid.)", price:4500 },
-  ]},
-  { id:"tacos", icon:"🌮", title:"Tacos y Especialidades", note:"Podés elegir «Solo» o «Con Papas».", items:[
-    { name:"Samuray 4X4", options:[{label:"Solo",price:2000},{label:"Con Papas",price:2500}] },
-    { name:"Taco de maíz", options:[{label:"Solo",price:2000},{label:"Con Papas",price:2700}] },
-    { name:"Taco de harina", options:[{label:"Solo",price:2000},{label:"Con Papas",price:2700}] },
-    { name:"Cartucho de maíz", options:[{label:"Solo",price:1500},{label:"Con Papas",price:2000}] },
-    { name:"Cartucho de harina", options:[{label:"Solo",price:1500},{label:"Con Papas",price:2000}] },
-    { name:"Encaramado", options:[{label:"Solo",price:2700},{label:"Con Papas",price:3200}] },
-    { name:"Súper Rústico", options:[{label:"Solo",price:2700},{label:"Con Papas",price:3200}] },
-    { name:"Taco de yuca", options:[{label:"Solo",price:2200},{label:"Con Papas",price:3000}] },
-  ]},
-  { id:"pinto", icon:"🍳", title:"Gallo Pinto", note:"Adicionales: Queso ₡500 · Natilla ₡300 · Plátano ₡200 · Tostadas ₡500 · Huevo con tomate ₡1.000.", items:[
-    { name:"Pinto con chuleta", price:2800 },
-    { name:"Pinto con huevo", price:2000 },
-    { name:"Pinto con 2 huevos", price:2500 },
-    { name:"Pinto con salchichón", price:2000 },
-    { name:"Pinto con queso", price:2000 },
-    { name:"Pinto con pollo a la plancha", price:2700 },
-    { name:"Pinto con carne en salsa y huevo", price:2700 },
-    { name:"Pinto con carne en salsa", price:2500 },
-    { name:"Pinto con carne en salsa y 2 huevos", price:3000 },
-    { name:"Pinto con bistec", price:2800 },
-    { name:"Pinto Rústico", price:3200 },
-    { name:"Adicional: Queso", price:500 },
-    { name:"Adicional: Natilla", price:300 },
-    { name:"Adicional: Plátano maduro", price:200 },
-    { name:"Adicional: Tostadas", price:500 },
-    { name:"Adicional: Huevo con tomate", price:1000 },
-  ]},
-  { id:"bebidas", icon:"🥤", title:"Bebidas", items:[
-    { name:"Gaseosa / Refresco (Pepsi, Evervess, 7Up)", options:[{label:"350ml",price:800},{label:"600ml",price:1200},{label:"1.5L",price:1600},{label:"2.5L",price:2300}] },
-    { name:"Mirinda / H2OH 600ml", price:1200 },
-    { name:"Lata Milory 355ml", price:1200 },
-    { name:"Tropical", options:[{label:"355ml",price:800},{label:"500ml",price:1200},{label:"2.5L",price:2300}] },
-    { name:"Gatorade 600ml", price:1500 },
-    { name:"Maxxx Energy 350ml", price:2000 },
-    { name:"Agua Cristal 600ml", price:800 },
-    { name:"Vitaloe", price:1500 },
-    { name:"Gaseosa envase vidrio 355ml", price:800 },
-    { name:"Bebidas Calientes (Café, Té, Chocolate, Aguadulce)", options:[{label:"Negro",price:700},{label:"Con Leche",price:800}] },
-    { name:"Batidos", options:[{label:"En Agua",price:1000},{label:"En Leche",price:1500}] },
-    { name:"Naturales / Jugo de naranja", options:[{label:"Pequeño",price:700},{label:"Grande",price:800}] },
-  ]},
-  { id:"combos", icon:"🍱", title:"Combos de Pollo Frito", items:[
-    { name:"Combo Rústico (2 pzs pollo, papas y fresco 355ml)", price:2800 },
-    { name:"Combo 13 piezas + papas + refresco 2.5L", price:16000 },
-    { name:"Combo 5 porciones cuarto y muslo + Pepsi 1.5L", price:10000 },
-    { name:"Pechuga y muslo/cuarto + papas y fresco 355ml", price:3100 },
-  ]},
-];
+// El menú (variable global MENU) se carga desde menu-data.js, incluido arriba.
 </script>
 
 <!-- ==================== LÓGICA ==================== -->

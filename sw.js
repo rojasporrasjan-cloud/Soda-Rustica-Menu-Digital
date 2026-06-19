@@ -1,10 +1,12 @@
 // Service worker de Soda Rústica — habilita instalación (PWA) y uso offline.
 // Estrategia: network-first para que los cambios del menú se vean al instante,
 // con respaldo a caché cuando no hay conexión.
-const CACHE = "rustica-v2";
+const CACHE = "rustica-v4";
 const CORE = [
   "./",
   "./index.html",
+  "./tailwind.css",
+  "./menu-data.js",
   "./manifest.json",
   "./icon-192.png",
   "./icon-512.png",

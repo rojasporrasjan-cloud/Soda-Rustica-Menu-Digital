@@ -1,0 +1,9 @@
+{
+  "name": "menu-rustica",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Menú digital de Soda La Rústica (sitio estático, sin servidor).",
+  "scripts": {
+    "build:css": "npx --yes tailwindcss@3.4.19 -i ./tailwind-input.css -o ./tailwind.css --minify"
+  }
+}
