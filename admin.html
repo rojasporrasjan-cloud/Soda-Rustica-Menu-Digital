@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Panel de Mesas · Soda Rústica</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@700;800;900&family=Dancing+Script:wght@700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/qrious@4.0.2/dist/qrious.min.js"></script>
+  <style>
+    :root{ --gold:#f0c060; --goldDim:#c9943a; --cream:#f5eedf; --ink:#0b1622; }
+    *{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+    body{ margin:0; font-family:'Inter',sans-serif; color:var(--cream);
+      background:radial-gradient(120% 80% at 50% 0%,#14253b 0%,#0a1422 55%,#070f1a 100%);
+      min-height:100vh; }
+
+    header{ text-align:center; padding:28px 16px 20px;
+      border-bottom:1px solid rgba(240,192,96,.16); }
+    .brand{ font-family:'Dancing Script',cursive; font-size:30px; font-weight:700;
+      background:linear-gradient(135deg,#f8d068,#c88828);
+      -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+    .sub{ font-size:11px; letter-spacing:.24em; text-transform:uppercase;
+      color:rgba(245,238,223,.45); margin-top:4px; }
+    header h1{ font-family:'Playfair Display',serif; font-size:22px; font-weight:800;
+      margin:14px 0 0; color:var(--cream); }
+    header h1 span{ color:var(--gold); }
+    .hint{ font-size:12.5px; color:rgba(245,238,223,.5); margin:6px 0 0; }
+    .backlink{ display:inline-block; margin-top:12px; font-size:12px;
+      color:rgba(240,192,96,.7); text-decoration:none; }
+    .backlink:hover{ text-decoration:underline; }
+
+    .controls{ max-width:680px; margin:22px auto 8px; padding:0 16px;
+      display:flex; flex-direction:column; gap:14px; }
+    .panel{ background:linear-gradient(160deg,rgba(255,255,255,.05),rgba(255,255,255,.015));
+      border:1px solid rgba(240,192,96,.18); border-radius:16px;
+      padding:18px; box-shadow:inset 0 1px 0 rgba(255,255,255,.04); }
+    .field{ margin-bottom:14px; } .field:last-child{ margin-bottom:0; }
+    label{ display:block; font-size:11px; font-weight:700; letter-spacing:.14em;
+      text-transform:uppercase; color:rgba(240,192,96,.7); margin-bottom:7px; }
+    input{ width:100%; padding:12px 14px; border-radius:11px;
+      border:1.5px solid rgba(240,192,96,.18);
+      background:rgba(7,17,30,.6); color:var(--cream);
+      font-size:15px; font-family:'Inter',sans-serif; outline:none; transition:border-color .18s; }
+    input:focus{ border-color:rgba(240,192,96,.6); }
+    .help{ font-size:11.5px; color:rgba(245,238,223,.42); margin-top:6px; line-height:1.4; }
+    .row{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+    .actions{ display:flex; gap:10px; flex-wrap:wrap; margin-top:4px; }
+    button{ flex:1; min-width:140px; padding:13px 16px; border:none; border-radius:12px;
+      font-family:'Inter',sans-serif; font-size:14.5px; font-weight:700; cursor:pointer;
+      display:inline-flex; align-items:center; justify-content:center; gap:8px;
+      transition:opacity .15s, transform .12s; }
+    button:active{ transform:scale(.98); }
+    .btn-gold{ color:var(--ink); background:linear-gradient(135deg,#f0c060,#c9943a);
+      box-shadow:0 4px 18px rgba(240,192,96,.3); }
+    .btn-ghost{ color:var(--cream); background:rgba(255,255,255,.05);
+      border:1.5px solid rgba(240,192,96,.28); }
+    button:disabled{ opacity:.4; cursor:not-allowed; }
+
+    .count-note{ max-width:680px; margin:10px auto 0; padding:0 18px;
+      font-size:12.5px; color:rgba(245,238,223,.5); text-align:center; }
+
+    /* Grid de tarjetas */
+    #grid{ max-width:1000px; margin:26px auto 60px; padding:0 16px;
+      display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:22px; }
+    .qr-card{ border-radius:16px; overflow:hidden;
+      box-shadow:0 12px 40px rgba(0,0,0,.6); display:flex; flex-direction:column; }
+    .qr-card canvas{ width:100%; height:auto; display:block; }
+    .card-actions{ display:flex; gap:8px; padding:10px;
+      background:rgba(10,20,34,.95); border-top:1px solid rgba(240,192,96,.15); }
+    .card-actions button{ flex:1; min-width:0; padding:10px; font-size:13px; border-radius:10px; }
+    .btn-dl{ color:var(--cream); background:rgba(240,192,96,.18);
+      border:1px solid rgba(240,192,96,.35); }
+    .btn-cp{ color:var(--goldDim); background:transparent;
+      border:1px solid rgba(240,192,96,.2); }
+
+    .empty{ max-width:680px; margin:40px auto; text-align:center;
+      color:rgba(245,238,223,.4); font-size:14px; padding:0 20px; }
+    .toast{ position:fixed; bottom:24px; left:50%;
+      transform:translateX(-50%) translateY(12px);
+      background:linear-gradient(135deg,#f0c060,#c9943a); color:var(--ink);
+      font-weight:700; font-size:13.5px; padding:11px 20px; border-radius:999px;
+      box-shadow:0 8px 28px rgba(0,0,0,.4); opacity:0; pointer-events:none;
+      transition:opacity .25s, transform .25s; z-index:50; }
+    .toast.show{ opacity:1; transform:translateX(-50%) translateY(0); }
+
+    /* Impresión: solo tarjetas, 2 por fila */
+    @media print{
+      @page{ margin:10mm; }
+      body{ background:#fff; }
+      header,.controls,.count-note,.toast,.card-actions{ display:none !important; }
+      #grid{ display:grid; grid-template-columns:1fr 1fr; gap:8mm;
+        margin:0; padding:0; max-width:none; }
+      .qr-card{ box-shadow:none; break-inside:avoid; page-break-inside:avoid; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="brand">Soda Rústica</div>
+  <div class="sub">Panel de administración</div>
+  <h1>Panel de <span>administración</span></h1>
+  <a class="backlink" href="index.html">← Volver al menú</a>
+</header>
+
+<!-- ══ FOTOS DE PLATILLOS ══════════════════════════════════ -->
+<div class="controls">
+  <div class="panel">
+    <h2 style="font-family:'Playfair Display',serif;font-size:18px;font-weight:800;color:var(--cream);margin:0 0 4px">📸 Fotos de platillos</h2>
+    <p class="help" style="margin-bottom:16px">Elegí un platillo, subí la foto y descargala con el nombre correcto. Luego guardala en la carpeta <code>img/platillos/</code> del menú.</p>
+    <div class="field">
+      <label for="photoCat">Categoría</label>
+      <select id="photoCat" style="width:100%;padding:12px 14px;border-radius:11px;border:1.5px solid rgba(240,192,96,.18);background:rgba(7,17,30,.6);color:var(--cream);font-size:15px;font-family:'Inter',sans-serif;outline:none;">
+        <option value="">Cargando…</option>
+      </select>
+    </div>
+    <div class="field">
+      <label for="photoDish">Platillo</label>
+      <select id="photoDish" style="width:100%;padding:12px 14px;border-radius:11px;border:1.5px solid rgba(240,192,96,.18);background:rgba(7,17,30,.6);color:var(--cream);font-size:15px;font-family:'Inter',sans-serif;outline:none;">
+        <option value="">— Elegí la categoría primero —</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Foto del platillo</label>
+      <div id="photoDropZone" style="border:2px dashed rgba(240,192,96,.3);border-radius:12px;padding:24px;text-align:center;cursor:pointer;transition:border-color .2s;background:rgba(255,255,255,.03)">
+        <div id="photoPreview" style="display:none;margin-bottom:12px">
+          <img id="photoPreviewImg" style="max-height:180px;border-radius:10px;object-fit:cover;max-width:100%;box-shadow:0 4px 18px rgba(0,0,0,.4)" />
+        </div>
+        <p style="color:rgba(245,238,223,.5);font-size:13.5px;margin:0" id="photoDropHint">Tocá para elegir una foto o arrastrala aquí</p>
+        <input type="file" id="photoFile" accept="image/*" style="display:none">
+      </div>
+      <div id="photoFileInfo" style="margin-top:10px;font-size:12px;color:rgba(240,192,96,.7);display:none">
+        <b>📁 Guardá el archivo como:</b> <code id="photoFileName"></code><br>
+        <span style="color:rgba(245,238,223,.45)">en la carpeta <code>img/platillos/</code> del proyecto</span>
+      </div>
+    </div>
+    <div class="actions" style="margin-top:4px">
+      <button class="btn-gold" id="photoDownloadBtn" disabled>⬇ Descargar con nombre correcto</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ QR DE MESAS ═════════════════════════════════════════ -->
+<div class="controls" style="margin-top:10px">
+  <div class="panel">
+    <h2 style="font-family:'Playfair Display',serif;font-size:18px;font-weight:800;color:var(--cream);margin:0 0 14px">🪑 Códigos QR por mesa</h2>
+    <div class="field">
+      <label for="urlBase">URL pública del menú</label>
+      <input id="urlBase" type="url" placeholder="https://tu-sitio.com/index.html" />
+      <p class="help">Dirección donde está publicado el menú. Se agrega <code>?mesa=N</code> automáticamente a cada QR.</p>
+    </div>
+    <div class="field">
+      <label>Rango de mesas</label>
+      <div class="row">
+        <div>
+          <input id="from" type="number" min="1" value="1" inputmode="numeric" />
+          <p class="help">Desde la mesa</p>
+        </div>
+        <div>
+          <input id="to" type="number" min="1" value="10" inputmode="numeric" />
+          <p class="help">Hasta la mesa</p>
+        </div>
+      </div>
+    </div>
+    <div class="actions">
+      <button class="btn-gold" id="genBtn">✦ Generar QR</button>
+      <button class="btn-ghost" id="printBtn" disabled>🖨️ Imprimir todas</button>
+    </div>
+  </div>
+</div>
+</div>
+
+<p class="count-note" id="countNote"></p>
+<div id="grid"></div>
+<div class="empty" id="emptyMsg">Configurá la URL y el rango, luego tocá <strong>Generar QR</strong>.</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const $ = id => document.getElementById(id);
+const urlInput=$("urlBase"), fromInput=$("from"), toInput=$("to");
+const grid=$("grid"), emptyMsg=$("emptyMsg"), countNote=$("countNote");
+const genBtn=$("genBtn"), printBtn=$("printBtn");
+const LS="rustica_admin_cfg";
+
+(function initUrl(){
+  let s={};
+  try{ s=JSON.parse(localStorage.getItem(LS))||{}; }catch{}
+  urlInput.value = s.url || new URL("index.html", location.href).href;
+  if(s.from) fromInput.value=s.from;
+  if(s.to)   toInput.value=s.to;
+})();
+
+function saveCfg(){
+  try{ localStorage.setItem(LS, JSON.stringify({
+    url:urlInput.value.trim(), from:fromInput.value, to:toInput.value
+  }));}catch{}
+}
+
+function toast(msg){
+  const t=$("toast"); t.textContent=msg; t.classList.add("show");
+  clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove("show"),1900);
+}
+
+function buildUrl(base, mesa){
+  try{ const u=new URL(base); u.searchParams.set("mesa",mesa); return u.href; }
+  catch{ return base+(base.includes("?")?"&":"?")+"mesa="+encodeURIComponent(mesa); }
+}
+
+// ── Genera QR canvas (blanco, módulos oscuros) ─────────────
+function qrCanvasFor(text){
+  const cv=document.createElement("canvas");
+  new QRious({ element:cv, value:text, size:220, padding:7,
+    foreground:"#0d1826", background:"#ffffff", level:"M" });
+  return cv;
+}
+
+// ── Helpers de canvas ───────────────────────────────────────
+function rrect(ctx, x, y, w, h, r){
+  ctx.beginPath();
+  ctx.moveTo(x+r,y);
+  ctx.lineTo(x+w-r,y); ctx.arcTo(x+w,y,   x+w,y+r,  r);
+  ctx.lineTo(x+w,y+h-r); ctx.arcTo(x+w,y+h,x+w-r,y+h,r);
+  ctx.lineTo(x+r,y+h); ctx.arcTo(x,  y+h, x,  y+h-r,r);
+  ctx.lineTo(x,y+r);   ctx.arcTo(x,  y,   x+r,y,    r);
+  ctx.closePath();
+}
+
+function diamond(ctx, cx, cy, size, color){
+  ctx.save(); ctx.translate(cx,cy); ctx.rotate(Math.PI/4);
+  ctx.fillStyle=color; ctx.fillRect(-size/2,-size/2,size,size);
+  ctx.restore();
+}
+
+function ornLine(ctx, y, x0, x1, color){
+  ctx.strokeStyle=color||"rgba(201,148,58,0.5)";
+  ctx.lineWidth=1.5;
+  ctx.beginPath(); ctx.moveTo(x0,y); ctx.lineTo(x1,y); ctx.stroke();
+}
+
+// ── Tarjeta compacta para servilletero ─────────────────────
+// Dimensiones: ~8.5 cm × 11 cm a 300 dpi (sin logo, solo texto)
+async function makeCardCanvas(mesa, qrCanvas){
+  await document.fonts.ready;
+
+  // Compacto: 500 × 620 canvas units × DPR=2 → 1000×1240 px → ~8.5×10.5 cm a 300 dpi
+  const W=500, H=620, DPR=2;
+  const c=document.createElement("canvas");
+  c.width=W*DPR; c.height=H*DPR;
+  const ctx=c.getContext("2d");
+  ctx.scale(DPR,DPR);
+  ctx.textAlign="center";
+
+  const MX=14; // margen exterior
+
+  // ── FONDO ───────────────────────────────────────────────
+  const bg=ctx.createLinearGradient(0,0,0,H);
+  bg.addColorStop(0,"#14223a");
+  bg.addColorStop(0.5,"#0e1928");
+  bg.addColorStop(1,"#070f1a");
+  rrect(ctx,0,0,W,H,12); ctx.fillStyle=bg; ctx.fill();
+
+  // Grano de textura sutil
+  ctx.globalAlpha=0.022;
+  for(let i=0;i<1800;i++){
+    const gx=Math.random()*W, gy=Math.random()*H, gr=Math.random()*1.2;
+    ctx.fillStyle=Math.random()>.5?"#fff":"#000";
+    ctx.beginPath(); ctx.arc(gx,gy,gr,0,Math.PI*2); ctx.fill();
+  }
+  ctx.globalAlpha=1;
+
+  // ── BORDES ──────────────────────────────────────────────
+  ctx.lineWidth=2;
+  rrect(ctx,MX,MX,W-MX*2,H-MX*2,9);
+  ctx.strokeStyle="rgba(201,148,58,0.8)"; ctx.stroke();
+  ctx.lineWidth=0.8;
+  rrect(ctx,MX+6,MX+6,W-MX*2-12,H-MX*2-12,6);
+  ctx.strokeStyle="rgba(201,148,58,0.22)"; ctx.stroke();
+
+  // Diamantes en esquinas
+  const cd=10;
+  [[MX,MX],[W-MX,MX],[MX,H-MX],[W-MX,H-MX]].forEach(([cx,cy])=>{
+    diamond(ctx,cx,cy,cd,"#c9943a");
+    ctx.fillStyle="rgba(201,148,58,0.35)";
+    [[0,cd*1.5],[cd*1.5,0],[0,-cd*1.5],[-cd*1.5,0]].forEach(([dx,dy])=>{
+      ctx.beginPath(); ctx.arc(cx+dx,cy+dy,1.6,0,Math.PI*2); ctx.fill();
+    });
+  });
+
+  // ── ENCABEZADO: solo letras, sin logo ───────────────────
+  // Líneas ornamentales antes del nombre
+  const hOrnY=46;
+  ornLine(ctx, hOrnY, MX+28, W/2-52);
+  ornLine(ctx, hOrnY, W/2+52, W-MX-28);
+  diamond(ctx, W/2, hOrnY, 7, "#f0c060");
+
+  // Nombre en Dancing Script
+  ctx.fillStyle="#f0c060";
+  ctx.font="700 44px 'Dancing Script',cursive";
+  ctx.fillText("Soda Rústica", W/2, 36);
+
+  // Línea ornamental debajo del nombre
+  const subOrnY=54;
+  ornLine(ctx, subOrnY, MX+28, W/2-40);
+  ornLine(ctx, subOrnY, W/2+40, W-MX-28);
+  diamond(ctx, W/2, subOrnY, 5, "rgba(201,148,58,0.6)");
+
+  // Subtítulo
+  ctx.fillStyle="rgba(201,148,58,0.6)";
+  ctx.font="600 10px 'Inter',sans-serif";
+  try{ ctx.letterSpacing="3.5px"; }catch{}
+  ctx.fillText("S A R C H Í   ·   C O S T A   R I C A", W/2, 70);
+  try{ ctx.letterSpacing="0px"; }catch{}
+
+  // ── DIVISOR ─────────────────────────────────────────────
+  const d1y=84;
+  ornLine(ctx, d1y, MX+34, W/2-20);
+  ornLine(ctx, d1y, W/2+20, W-MX-34);
+  diamond(ctx, W/2, d1y, 7, "#f0c060");
+
+  // ── MESA N ──────────────────────────────────────────────
+  ctx.fillStyle="rgba(240,192,96,0.5)";
+  ctx.font="800 11px 'Inter',sans-serif";
+  try{ ctx.letterSpacing="6px"; }catch{}
+  ctx.fillText("MESA", W/2, 104);
+  try{ ctx.letterSpacing="0px"; }catch{}
+
+  // Número: tamaño dinámico según dígitos
+  const numStr=String(mesa);
+  const numSz = numStr.length===1 ? 108 : numStr.length===2 ? 90 : 72;
+  ctx.fillStyle="#f5eedf";
+  ctx.font=`900 ${numSz}px 'Playfair Display',serif`;
+  ctx.save();
+  ctx.shadowColor="rgba(240,192,96,0.25)"; ctx.shadowBlur=18;
+  ctx.fillText(numStr, W/2, 104+numSz+2);
+  ctx.restore();
+
+  // ── QR CODE (sin línea divisoria) — efecto sticker ──────
+  const d2y=104+numSz+42;   // más espacio entre el número y la caja del QR
+  const qrSz=220, qrX=(W-qrSz)/2, qrY=d2y;
+  const pad=14;
+  const bx=qrX-pad, by=qrY-pad, bw=qrSz+pad*2, bh=qrSz+pad*2, br=18;
+
+  // Sombra manual en capas (garantiza visibilidad en canvas)
+  // Cada capa: rect desplazado + difuminado visual a mano
+  const shadowLayers=[
+    {dx:0, dy:12, blur:24, alpha:0.45, color:"#000010"},
+    {dx:0, dy:8,  blur:16, alpha:0.35, color:"#000820"},
+    {dx:0, dy:4,  blur:8,  alpha:0.25, color:"#001030"},
+  ];
+  shadowLayers.forEach(({dx,dy,blur,alpha,color})=>{
+    for(let i=blur;i>=0;i-=4){
+      const exp=i*0.6;
+      ctx.globalAlpha = alpha * (1 - i/blur) * 0.4;
+      ctx.fillStyle=color;
+      rrect(ctx, bx-exp/2+dx, by-exp/2+dy, bw+exp, bh+exp, br+exp/2);
+      ctx.fill();
+    }
+  });
+  ctx.globalAlpha=1;
+
+  // Caja blanca encima
+  ctx.fillStyle="#ffffff";
+  rrect(ctx, bx, by, bw, bh, br);
+  ctx.fill();
+
+  // Borde dorado degradado
+  const bGrad=ctx.createLinearGradient(bx, by, bx+bw, by+bh);
+  bGrad.addColorStop(0,   "#f8d070");
+  bGrad.addColorStop(0.5, "#c9943a");
+  bGrad.addColorStop(1,   "#f8d070");
+  ctx.lineWidth=2.5;
+  rrect(ctx, bx, by, bw, bh, br);
+  ctx.strokeStyle=bGrad; ctx.stroke();
+
+  // QR con drop-shadow sobre los módulos negros (efecto elevado)
+  ctx.save();
+  try {
+    // Sombra sobre el patrón negro del QR: difuminada hacia afuera
+    ctx.filter = "drop-shadow(0px 3px 5px rgba(0,0,0,0.55)) drop-shadow(0px 1px 2px rgba(0,0,0,0.4))";
+  } catch(e) {}
+  ctx.drawImage(qrCanvas, qrX, qrY, qrSz, qrSz);
+  ctx.restore();
+  try { ctx.filter = "none"; } catch(e) {}
+
+  // ── DIVISOR después del QR ───────────────────────────────
+  const d3y=qrY+qrSz+pad+18;
+  ornLine(ctx, d3y, MX+34, W/2-18);
+  ornLine(ctx, d3y, W/2+18, W-MX-34);
+  diamond(ctx, W/2, d3y, 7, "#f0c060");
+
+  // ── CALL TO ACTION ───────────────────────────────────────
+  ctx.fillStyle="#f5eedf";
+  ctx.font="600 19px 'Inter',sans-serif";
+  ctx.fillText("Escaneá para ver el menú", W/2, d3y+34);
+  ctx.fillStyle="rgba(240,192,96,0.7)";
+  ctx.font="500 16px 'Inter',sans-serif";
+  ctx.fillText("y pedí desde tu mesa 📲", W/2, d3y+58);
+
+  // ── LÍNEA INFERIOR ───────────────────────────────────────
+  const botY=H-MX-14;
+  ornLine(ctx, botY, MX+28, W-MX-28, "rgba(201,148,58,0.35)");
+  diamond(ctx, W/2, botY, 6, "rgba(201,148,58,0.45)");
+
+  return c;
+}
+
+// ── Generar tarjetas ────────────────────────────────────────
+async function generate(){
+  const base=urlInput.value.trim();
+  if(!base){ toast("Escribí la URL del menú"); urlInput.focus(); return; }
+
+  let from=parseInt(fromInput.value,10)||1;
+  let to  =parseInt(toInput.value,10)  ||from;
+  if(from<1) from=1;
+  if(to<from){ const t=from; from=Math.max(1,to); to=t; }
+  if(to-from+1>100){ toast("Máximo 100 mesas por tanda"); return; }
+
+  saveCfg();
+  genBtn.disabled=true; genBtn.textContent="Generando…";
+  grid.innerHTML=""; emptyMsg.style.display="none";
+
+  for(let n=from; n<=to; n++){
+    const link=buildUrl(base, n);
+    let qr;
+    try{ qr=qrCanvasFor(link); }
+    catch{ toast("Error en el QR de la mesa "+n); break; }
+
+    let card;
+    try{ card=await makeCardCanvas(n, qr); }
+    catch(e){ console.error(e); toast("Error generando tarjeta "+n); break; }
+
+    const wrap=document.createElement("div");
+    wrap.className="qr-card";
+    wrap.appendChild(card);
+
+    const acts=document.createElement("div");
+    acts.className="card-actions";
+
+    const dl=document.createElement("button");
+    dl.className="btn-dl"; dl.textContent="⬇ Descargar PNG";
+    dl.onclick=()=>{
+      const a=document.createElement("a");
+      a.href=card.toDataURL("image/png");
+      a.download="mesa-"+n+".png"; a.click();
+    };
+
+    const cp=document.createElement("button");
+    cp.className="btn-cp"; cp.textContent="⧉ Link";
+    cp.onclick=async()=>{
+      try{ await navigator.clipboard.writeText(link); toast("Link mesa "+n+" copiado ✓"); }
+      catch{ toast("No se pudo copiar"); }
+    };
+
+    acts.appendChild(dl); acts.appendChild(cp);
+    wrap.appendChild(acts);
+    grid.appendChild(wrap);
+  }
+
+  genBtn.disabled=false; genBtn.textContent="✦ Generar QR";
+  printBtn.disabled=!grid.children.length;
+  countNote.textContent=grid.children.length
+    ? grid.children.length+" tarjeta(s) lista(s) para imprimir o descargar"
+    : "";
+}
+
+genBtn.onclick=generate;
+printBtn.onclick=()=>window.print();
+[urlInput,fromInput,toInput].forEach(el=>el.addEventListener("change",saveCfg));
+
+// ══════════ FOTOS DE PLATILLOS ════════════════════════════
+// El MENU de la soda se carga desde index.html (mismo servidor)
+// Normalizamos los nombres igual que el menú
+const normFN = s => s.normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase()
+  .replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+
+(async function initPhotos(){
+  // Cargar el MENU desde index.html parseando el JS
+  let MENU_DATA = [];
+  try {
+    const html = await fetch('index.html').then(r=>r.text());
+    // Extraer el bloque const MENU = [...];
+    const m = html.match(/const MENU\s*=\s*(\[[\s\S]*?\]);\s*\n/);
+    if (m) MENU_DATA = eval(m[1]); // seguro: es nuestro propio archivo
+  } catch(e) { console.warn('No se pudo cargar MENU', e); }
+
+  const catSel  = document.getElementById('photoCat');
+  const dishSel = document.getElementById('photoDish');
+  const fileInp = document.getElementById('photoFile');
+  const dropZone= document.getElementById('photoDropZone');
+  const hint    = document.getElementById('photoDropHint');
+  const preview = document.getElementById('photoPreview');
+  const previewImg = document.getElementById('photoPreviewImg');
+  const fileInfo= document.getElementById('photoFileInfo');
+  const fileName= document.getElementById('photoFileName');
+  const dlBtn   = document.getElementById('photoDownloadBtn');
+  let currentBlob = null, currentName = '';
+
+  // Poblar categorías
+  catSel.innerHTML = '<option value="">— Elegí una categoría —</option>';
+  MENU_DATA.forEach(cat => {
+    const o = document.createElement('option');
+    o.value = cat.id; o.textContent = cat.icon + ' ' + cat.title;
+    catSel.appendChild(o);
+  });
+
+  catSel.addEventListener('change', () => {
+    const cat = MENU_DATA.find(c=>c.id===catSel.value);
+    dishSel.innerHTML = '<option value="">— Elegí el platillo —</option>';
+    if (!cat) return;
+    cat.items.forEach(item => {
+      const o = document.createElement('option');
+      o.value = normFN(item.name); o.textContent = item.name;
+      dishSel.appendChild(o);
+    });
+  });
+
+  dishSel.addEventListener('change', updateFileName);
+
+  function updateFileName(){
+    const fn = dishSel.value;
+    if (!fn) { fileInfo.style.display='none'; dlBtn.disabled=true; return; }
+    currentName = fn + '.jpg';
+    fileName.textContent = currentName;
+    fileInfo.style.display = currentBlob ? 'block' : 'none';
+    dlBtn.disabled = !currentBlob;
+  }
+
+  function handleFile(file){
+    if (!file || !file.type.startsWith('image/')) return;
+    currentBlob = file;
+    const reader = new FileReader();
+    reader.onload = e => {
+      previewImg.src = e.target.result;
+      preview.style.display = 'block';
+      hint.textContent = '✓ Foto lista para descargar';
+      updateFileName();
+    };
+    reader.readAsDataURL(file);
+  }
+
+  dropZone.addEventListener('click', () => fileInp.click());
+  dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.style.borderColor='rgba(240,192,96,.7)'; });
+  dropZone.addEventListener('dragleave',  () => dropZone.style.borderColor='');
+  dropZone.addEventListener('drop', e => { e.preventDefault(); dropZone.style.borderColor=''; handleFile(e.dataTransfer.files[0]); });
+  fileInp.addEventListener('change', () => handleFile(fileInp.files[0]));
+
+  dlBtn.addEventListener('click', () => {
+    if (!currentBlob || !currentName) return;
+    const url = URL.createObjectURL(currentBlob);
+    const a = document.createElement('a');
+    a.href = url; a.download = currentName; a.click();
+    URL.revokeObjectURL(url);
+    toast(`Descargado: ${currentName} → guardalo en img/platillos/`);
+  });
+})();
+</script>
+</body>
+</html>
